@@ -124,9 +124,12 @@ public class Notification {
         notificationBuilder
             .setContentTitle(attributes.subject)
             .setContentText(attributes.message)
-            .setSmallIcon(context.getResources().getIdentifier(attributes.smallIcon, "mipmap", context.getPackageName()))
+            .setSmallIcon(context.getResources().getIdentifier(attributes.smallIcon, "drawable", context.getPackageName()))
             .setAutoCancel(attributes.autoClear)
             .setContentIntent(getContentIntent());
+
+        if(attributes.action_first != null) notificationBuilder.addAction(attributes.action_first_icon, attributes.action_first, getFirstActionIntent());
+        if(attributes.action_second != null) notificationBuilder.addAction(attributes.action_second_icon, attributes.action_second, getSecondActionIntent());
 
 
         if (attributes.priority != null) {
@@ -134,9 +137,13 @@ public class Notification {
         }
 
         if (attributes.largeIcon != null) {
-            int largeIconId = context.getResources().getIdentifier(attributes.largeIcon, "drawable", context.getPackageName());
-            Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), largeIconId);
-            notificationBuilder.setLargeIcon(largeIcon);
+            if(attributes.largeIcon.startsWith("http://") || attributes.largeIcon.startsWith("https://")) {
+                notificationBuilder.setLargeIcon(getLargeIcon(attributes.largeIcon));
+            }else{
+                int largeIconId = context.getResources().getIdentifier(attributes.largeIcon, "drawable", context.getPackageName());
+                Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), largeIconId);
+                notificationBuilder.setLargeIcon(largeIcon);
+            }
         }
 
         if (attributes.group != null) {
@@ -431,12 +438,44 @@ public class Notification {
         return PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    private PendingIntent getFirstActionIntent() {
+        Intent firstActionIntent = new Intent(context, NotificationEventReceiver.class);
+
+        firstActionIntent.putExtra(NotificationEventReceiver.NOTIFICATION_ID, id);
+        firstActionIntent.putExtra(NotificationEventReceiver.ACTION, attributes.action_first);
+        firstActionIntent.putExtra(NotificationEventReceiver.PAYLOAD, attributes.action_first_payload);
+
+        return PendingIntent.getBroadcast(context, id+1000, firstActionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private PendingIntent getSecondActionIntent() {
+        Intent secondActionIntent = new Intent(context, NotificationEventReceiver.class);
+
+        secondActionIntent.putExtra(NotificationEventReceiver.NOTIFICATION_ID, id);
+        secondActionIntent.putExtra(NotificationEventReceiver.ACTION, attributes.action_second);
+        secondActionIntent.putExtra(NotificationEventReceiver.PAYLOAD, attributes.action_second_payload);
+
+        return PendingIntent.getBroadcast(context, id+2000, secondActionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
     private PendingIntent getScheduleNotificationIntent() {
         Intent notificationIntent = new Intent(context, NotificationPublisher.class);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, id);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 
-        return pendingIntent;
+    private static Bitmap getLargeIcon(String largeIconString){
+        Bitmap largeIcon = null;
+        try {
+            Log.i("ReactSystemNotification", "start to get largeIcon from URL : " + largeIconString);
+            largeIcon = BitmapFactory.decodeStream(new URL(largeIconString).openConnection().getInputStream());
+            Log.i("ReactSystemNotification", "finishing to get largeIcon from URL");
+            return largeIcon;
+
+        } catch (Exception e) {
+            Log.e("ReactSystemNotification", "Error when getting largeIcon from URL" + e);
+            return null;
+        }
     }
 }

@@ -184,7 +184,7 @@ public class NotificationModule extends ReactContextBaseJavaModule {
         try {
             Notification n = mNotificationManager.clear(notificationID);
 
-            successCallback.invoke(n.getAttributes().asReadableMap());
+            successCallback.invoke(/*n.getAttributes().asReadableMap()*/);
 
         } catch (Exception e) {
             errorCallback.invoke(e.getMessage());

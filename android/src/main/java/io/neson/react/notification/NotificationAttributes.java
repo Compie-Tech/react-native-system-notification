@@ -19,6 +19,12 @@ public class NotificationAttributes {
     public String message;
     public String action;
     public String payload;
+    public String action_first;
+    public String action_first_payload;
+    public Integer action_first_icon;
+    public String action_second;
+    public String action_second_payload;
+    public Integer action_second_icon;
 
     public Boolean delayed;
     public Integer delay;
@@ -134,6 +140,16 @@ public class NotificationAttributes {
         if (readableMap.hasKey("message")) message = readableMap.getString("message");
         if (readableMap.hasKey("action")) action = readableMap.getString("action");
         if (readableMap.hasKey("payload")) payload = readableMap.getString("payload");
+        if (readableMap.hasKey("action_first")) {
+            action_first = readableMap.getString("action_first");
+            action_first_payload = readableMap.getString("action_first_payload");
+            action_first_icon = readableMap.getInt("action_first_icon");
+        }
+        if (readableMap.hasKey("action_second")) {
+            action_second = readableMap.getString("action_second");
+            action_second_payload = readableMap.getString("action_second_payload");
+            action_second_icon = readableMap.getInt("action_second_icon");
+        }
 
         if (readableMap.hasKey("delayed")) delayed = readableMap.getBoolean("delayed");
         if (readableMap.hasKey("delay")) delay = readableMap.getInt("delay");
@@ -206,6 +222,16 @@ public class NotificationAttributes {
         if (message != null) writableMap.putString("message", message);
         if (action != null) writableMap.putString("action", action);
         if (payload != null) writableMap.putString("payload", payload);
+        if (action_first != null){
+            writableMap.putString("action_first", action_first);
+            writableMap.putString("action_first_payload", action_first_payload);
+            writableMap.putInt("action_first_icon", action_first_icon);
+        }
+        if (action_second != null) {
+            writableMap.putString("action_second", action_second);
+            writableMap.putString("action_second_payload", action_second_payload);
+            writableMap.putInt("action_second_icon", action_second_icon);
+        }
 
         if (delayed != null) writableMap.putBoolean("delayed", delayed);
         if (delay != null) writableMap.putInt("delay", delay);
