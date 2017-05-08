@@ -53,7 +53,7 @@ var Notification = {
   clear: function(id) {
     return new Promise(function(resolve, reject) {
       NotificationModule.rClear(id, reject, function(notification) {
-        resolve(decodeNativeNotification(notification));
+        resolve(/*decodeNativeNotification(notification)*/);
       });
     });
   },
@@ -71,7 +71,7 @@ var Notification = {
         DeviceEventEmitter.addListener('sysNotificationClick', listener);
 
         NotificationModule.getInitialSysNotification(function(initialSysNotificationId,
-                                                              initialSysNotificationAction, 
+                                                              initialSysNotificationAction,
                                                               initialSysNotificationPayload) {
           if (initialSysNotificationId) {
             var event = {
@@ -80,11 +80,11 @@ var Notification = {
             }
 
             listener(event);
-            
+
             NotificationModule.removeInitialSysNotification();
           }
         });
-        
+
         break;
     }
   },
@@ -107,7 +107,8 @@ module.exports = Notification;
 function encodeNativeNotification(attributes) {
   if (typeof attributes === 'string') attributes = JSON.parse(attributes);
   // Set defaults
-  if (!attributes.smallIcon) attributes.smallIcon = 'ic_launcher';
+  if (!attributes.smallIcon) attributes.smallIcon = 'ic_stat_onesignal_default';
+  if (!attributes.largeIcon) attributes.largeIcon = 'ic_onesignal_large_icon_default';
   if (!attributes.id) attributes.id = parseInt(Math.random() * 100000);
   if (!attributes.action) attributes.action = 'DEFAULT';
   if (!attributes.payload) attributes.payload = {};
@@ -211,6 +212,12 @@ function encodeNativeNotification(attributes) {
 
   // Stringify the payload
   attributes.payload = JSON.stringify(attributes.payload);
+  if(attributes.action_first_payload){
+    attributes.action_first_payload = JSON.stringify(attributes.action_first_payload);
+  }
+  if(attributes.action_second_payload){
+    attributes.action_second_payload = JSON.stringify(attributes.action_second_payload);
+  }
 
   return attributes;
 }
@@ -230,15 +237,19 @@ function decodeNativeNotification(attributes) {
 
   // Parse the payload
   if (attributes.payload) attributes.payload = JSON.parse(attributes.payload);
+  if (attributes.action_first_payload) attributes.action_first_payload = JSON.parse(attributes.action_first_payload);
+  if (attributes.action_second_payload) attributes.action_second_payload = JSON.parse(attributes.action_second_payload);
 
   return attributes;
 }
 
 DeviceEventEmitter.addListener('sysModuleNotificationClick', function(e) {
+  console.log('sysModuleNotificationClick', e);
   var event = {
     action: e.action,
-    payload: JSON.parse(e.payload)
-  }
+    payload: JSON.parse(e.payload),
+    notificationID: e.notificationID
+  };
 
   DeviceEventEmitter.emit('sysNotificationClick', event);
 });
