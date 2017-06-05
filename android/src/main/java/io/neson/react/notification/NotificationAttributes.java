@@ -22,9 +22,11 @@ public class NotificationAttributes {
     public String action_first;
     public String action_first_payload;
     public Integer action_first_icon;
+    public String action_first_icon_string;
     public String action_second;
     public String action_second_payload;
     public Integer action_second_icon;
+    public String action_second_icon_string;
 
     public Boolean delayed;
     public Integer delay;

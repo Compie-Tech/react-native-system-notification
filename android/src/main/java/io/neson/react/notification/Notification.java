@@ -128,8 +128,21 @@ public class Notification {
             .setAutoCancel(attributes.autoClear)
             .setContentIntent(getContentIntent());
 
-        if(attributes.action_first != null) notificationBuilder.addAction(attributes.action_first_icon, attributes.action_first, getFirstActionIntent());
-        if(attributes.action_second != null) notificationBuilder.addAction(attributes.action_second_icon, attributes.action_second, getSecondActionIntent());
+        if (attributes.action_first != null) {
+            if (attributes.action_first_icon != null) {
+                notificationBuilder.addAction(attributes.action_first_icon, attributes.action_first, getFirstActionIntent());
+            } else {
+                notificationBuilder.addAction(context.getResources().getIdentifier(attributes.action_first_icon_string, "drawable", context.getPackageName()), attributes.action_first, getFirstActionIntent());
+            }
+
+        }
+        if (attributes.action_second != null) {
+            if (attributes.action_second_icon != null) {
+                notificationBuilder.addAction(attributes.action_second_icon, attributes.action_second, getSecondActionIntent());
+            } else {
+                notificationBuilder.addAction(context.getResources().getIdentifier(attributes.action_second_icon_string, "drawable", context.getPackageName()), attributes.action_second, getSecondActionIntent());
+            }
+        }
 
 
         if (attributes.priority != null) {
