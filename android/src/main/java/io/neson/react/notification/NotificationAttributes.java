@@ -97,34 +97,34 @@ public class NotificationAttributes {
 
             } else if (value.getClass().equals(Boolean.class)) {
                 writableMap.putBoolean(key, (Boolean) value);
-            
+
 
             } else if ("inboxStyle".equals(key)) {
-              inboxStyle = true;
-              WritableMap inboxStyleMap = new WritableNativeMap();
+                inboxStyle = true;
+                WritableMap inboxStyleMap = new WritableNativeMap();
 
-              Map inboxMap = (Map) value;              
-              if (inboxMap.containsKey("bigContentTitle")) {
-                inboxStyleBigContentTitle  = (String) inboxMap.get("bigContentTitle");
-                inboxStyleMap.putString("bigContentTitle", inboxStyleBigContentTitle);
-              }
+                Map inboxMap = (Map) value;
+                if (inboxMap.containsKey("bigContentTitle")) {
+                    inboxStyleBigContentTitle  = (String) inboxMap.get("bigContentTitle");
+                    inboxStyleMap.putString("bigContentTitle", inboxStyleBigContentTitle);
+                }
 
-              if (inboxMap.containsKey("summaryText")) {
-                inboxStyleSummaryText = (String) inboxMap.get("summaryText");
-                inboxStyleMap.putString("summaryText", inboxStyleSummaryText);
-              }
+                if (inboxMap.containsKey("summaryText")) {
+                    inboxStyleSummaryText = (String) inboxMap.get("summaryText");
+                    inboxStyleMap.putString("summaryText", inboxStyleSummaryText);
+                }
 
-              if (inboxMap.containsKey("lines")) {
-                  WritableArray inboxLines =  new com.facebook.react.bridge.WritableNativeArray();
-                  org.mozilla.javascript.NativeArray inboxStyleLines = (org.mozilla.javascript.NativeArray) inboxMap.get("lines");
+                if (inboxMap.containsKey("lines")) {
+                    WritableArray inboxLines =  new com.facebook.react.bridge.WritableNativeArray();
+                    org.mozilla.javascript.NativeArray inboxStyleLines = (org.mozilla.javascript.NativeArray) inboxMap.get("lines");
 
-                  for(int i=0; i < inboxStyleLines.size(); i++){
-                      inboxLines.pushString((String) inboxStyleLines.get(i));
-                  }
-                  inboxStyleMap.putArray("lines", inboxLines);
-              }
+                    for(int i=0; i < inboxStyleLines.size(); i++){
+                        inboxLines.pushString((String) inboxStyleLines.get(i));
+                    }
+                    inboxStyleMap.putArray("lines", inboxLines);
+                }
 
-              writableMap.putMap("inboxStyle", inboxStyleMap);
+                writableMap.putMap("inboxStyle", inboxStyleMap);
 
             } else {
                 Gson gson = new Gson();
@@ -145,12 +145,22 @@ public class NotificationAttributes {
         if (readableMap.hasKey("action_first")) {
             action_first = readableMap.getString("action_first");
             action_first_payload = readableMap.getString("action_first_payload");
-            action_first_icon = readableMap.getInt("action_first_icon");
+            if (readableMap.hasKey("action_first_icon")) {
+                action_first_icon = readableMap.getInt("action_first_icon");
+            } else {
+                action_first_icon_string = readableMap.getString("action_first_icon_string");
+            }
+
         }
         if (readableMap.hasKey("action_second")) {
             action_second = readableMap.getString("action_second");
             action_second_payload = readableMap.getString("action_second_payload");
-            action_second_icon = readableMap.getInt("action_second_icon");
+
+            if (readableMap.hasKey("action_second_icon")) {
+                action_second_icon = readableMap.getInt("action_second_icon");
+            } else {
+                action_second_icon_string = readableMap.getString("action_second_icon_string");
+            }
         }
 
         if (readableMap.hasKey("delayed")) delayed = readableMap.getBoolean("delayed");
@@ -205,10 +215,10 @@ public class NotificationAttributes {
 
             ReadableArray inboxLines = inboxStyleMap.getArray("lines");
             if (inboxLines != null) {
-              inboxStyleLines = new ArrayList<>();
-              for(int i=0; i < inboxLines.size(); i++){
-                  inboxStyleLines.add(inboxLines.getString(i));
-              }
+                inboxStyleLines = new ArrayList<>();
+                for(int i=0; i < inboxLines.size(); i++){
+                    inboxStyleLines.add(inboxLines.getString(i));
+                }
             }
         }else{
             inboxStyle = false;
@@ -227,12 +237,21 @@ public class NotificationAttributes {
         if (action_first != null){
             writableMap.putString("action_first", action_first);
             writableMap.putString("action_first_payload", action_first_payload);
-            writableMap.putInt("action_first_icon", action_first_icon);
+            if (action_first_icon != null) {
+                writableMap.putInt("action_first_icon", action_first_icon);
+            } else {
+                writableMap.putString("action_first_icon_string", action_first_icon_string);
+            }
+
         }
         if (action_second != null) {
             writableMap.putString("action_second", action_second);
             writableMap.putString("action_second_payload", action_second_payload);
-            writableMap.putInt("action_second_icon", action_second_icon);
+            if (action_second_icon != null) {
+                writableMap.putInt("action_second_icon", action_second_icon);
+            } else {
+                writableMap.putString("action_second_icon_string", action_second_icon_string);
+            }
         }
 
         if (delayed != null) writableMap.putBoolean("delayed", delayed);
